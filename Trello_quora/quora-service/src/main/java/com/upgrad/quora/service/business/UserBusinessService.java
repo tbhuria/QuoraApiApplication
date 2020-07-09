@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.Base64;
+import java.util.UUID;
 
 @Service
 public class UserBusinessService {
@@ -48,30 +49,33 @@ public class UserBusinessService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public UserAuthTokenEntity signin(final String username, final String password) throws AuthenticationFailedException {
-        try {
-            UserEntity user = userDao.getUserByUserName(username);
-            if (user == null) {
-                throw new AuthenticationFailedException("ATH-001", "This username does not exist");
-            }
-            final String encryptedPassword = passwordCryptographyProvider.encrypt(password, user.getSalt());
-            if (encryptedPassword.equals(user.getPassword())) {
-                JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(encryptedPassword);
-                UserAuthTokenEntity userAuthTokenEntity = new UserAuthTokenEntity();
-                userAuthTokenEntity.setUser(user);
-                final ZonedDateTime now = ZonedDateTime.now();
-                final ZonedDateTime expiresAt = now.plusHours(8);
-                userAuthTokenEntity.setAccessToken(jwtTokenProvider.generateToken(user.getUuid(), now, expiresAt));
-                userAuthTokenEntity.setLoginAt(now);
-                userAuthTokenEntity.setLogoutAt(expiresAt);
-                userAuthTokenEntity.setUuid(user.getUuid());
-                return userDao.createAuthToken(userAuthTokenEntity);
-            } else {
-                throw new AuthenticationFailedException("ATH-002", "Password failed");
-            }
-        } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ex) {
-            GenericErrorCode genericErrorCode = GenericErrorCode.GEN_001;
-            throw new UnexpectedException(genericErrorCode, ex);
+        UserEntity userEntity = userDao.getUserByUserName(username);
+
+        if (userEntity == null) {
+            throw new AuthenticationFailedException("ATH-001", "This username does not exist");
         }
+
+        final String encryptedPassword = passwordCryptographyProvider.encrypt(password, userEntity.getSalt());
+        if (encryptedPassword.equals(userEntity.getPassword())) {
+            JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(encryptedPassword);
+            UserAuthTokenEntity userAuthEntity = new UserAuthTokenEntity();
+
+            final ZonedDateTime now = ZonedDateTime.now();
+            final ZonedDateTime expiresAt = now.plusHours(8);
+
+            userAuthEntity.setUuid(UUID.randomUUID().toString());
+            userAuthEntity.setUser(userEntity);
+            userAuthEntity.setAccessToken(jwtTokenProvider.generateToken(userEntity.getUuid(), now, expiresAt));
+            userAuthEntity.setExpiresAt(expiresAt);
+            userAuthEntity.setLoginAt(now);
+
+            userDao.createAuthToken(userAuthEntity);
+
+            return userAuthEntity;
+        } else {
+            throw new AuthenticationFailedException("ATH-002", "Password failed");
+        }
+
     }
 }
 
