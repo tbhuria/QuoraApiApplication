@@ -3,6 +3,7 @@ package com.upgrad.quora.api;
 import com.upgrad.quora.service.ServiceConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Import;
  */
 @SpringBootApplication
 @Import(ServiceConfiguration.class)
+@ComponentScan({"com.upgrad.quora.api", "com.upgrad.quora.service"})
 public class QuoraApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(QuoraApiApplication.class, args);
