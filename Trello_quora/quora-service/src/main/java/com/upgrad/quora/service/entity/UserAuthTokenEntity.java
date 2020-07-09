@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "user_auth_tokens", schema = "quora")
+@Table(name = "user_auth")
 @NamedQueries({
         @NamedQuery(name = "userAuthTokenByAccessToken" , query = "select ut from UserAuthTokenEntity ut where ut.accessToken = :accessToken ")
 })
@@ -24,12 +24,12 @@ public class UserAuthTokenEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "UUID")
+    @Column(name = "uuid")
     private String uuid;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
-    private UserEntity user;
+    private UserEntity userId;
 
     @Column(name = "ACCESS_TOKEN")
     @NotNull
@@ -56,12 +56,12 @@ public class UserAuthTokenEntity implements Serializable {
         this.id = id;
     }
 
-    public UserEntity getUser() {
-        return user;
+    public UserEntity getUserId() {
+        return userId;
     }
 
-    public void setUser(UserEntity user) {
-        this.user = user;
+    public void setUser(UserEntity userId) {
+        this.userId = userId;
     }
 
     public String getAccessToken() {
@@ -105,18 +105,4 @@ public class UserAuthTokenEntity implements Serializable {
         this.uuid = uuid;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return new EqualsBuilder().append(this, obj).isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(this).hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
-    }
 }

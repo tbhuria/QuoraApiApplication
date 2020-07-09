@@ -18,34 +18,39 @@ import java.util.List;
 import static org.hibernate.id.PersistentIdentifierGenerator.SCHEMA;
 
 @Entity
-@Table(name = "answer", schema = "quora")
-/*@NamedQueries({
-        @NamedQuery(name = "roleByuuid" , query = "select r from RoleEntity r where r.uuid =:uuid")
-})*/
+@Table(name = "answer")
+@NamedQueries(
+        {
+                @NamedQuery(name = "answerByUUID", query = "select ans from AnswerEntity ans where ans.uuid = :uuid"),
+                @NamedQuery(name = "answerByQuestionId", query = "select ans from AnswerEntity ans where ans.question_id = :questionId")
+        }
+)
 public class AnswerEntity implements Serializable{
 
     @Id
-    @Column(name = "ID")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "UUID")
+    @Column(name = "uuid")
     @NotNull
     private int uuid;
 
-    @Column(name = "ANSWER")
+    @Column(name = "ans")
     @NotNull
     @Size(max = 255)
     private String ans;
-    @Column(name = "DATE")
-    private Date date;
 
+    @Column(name = "date")
+    private ZonedDateTime date;
 
-    @Column(name = "USER_ID")
-    private Integer user_id;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user_id;
 
-    @Column(name = "QUESTION_ID")
-    private Integer question_id;
+    @ManyToOne
+    @JoinColumn(name = "question_id")
+    private QuestionEntity question_id;
 
     public int getId() {
         return id;
@@ -75,27 +80,27 @@ public class AnswerEntity implements Serializable{
         this.ans = ans;
     }
 
-    public Date getDate() {
+    public ZonedDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(ZonedDateTime date) {
         this.date = date;
     }
 
-    public Integer getUser_id() {
+    public UserEntity getUser_id() {
         return user_id;
     }
 
-    public void setUser_id(Integer user_id) {
+    public void setUser_id(UserEntity user_id) {
         this.user_id = user_id;
     }
 
-    public Integer getQuestion_id() {
+    public QuestionEntity getQuestion_id() {
         return question_id;
     }
 
-    public void setQuestion_id(Integer question_id) {
+    public void setQuestion_id(QuestionEntity question_id) {
         this.question_id = question_id;
     }
 
@@ -103,18 +108,5 @@ public class AnswerEntity implements Serializable{
         this.uuid = uuid;
     }*/
 
-    @Override
-    public boolean equals(Object obj) {
-        return new EqualsBuilder().append(this, obj).isEquals();
-    }
 
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(this).hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
-    }
 }

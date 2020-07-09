@@ -15,88 +15,82 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "users", schema = "quora")
+@Table(name = "users")
 @NamedQueries(
         {
-                @NamedQuery(name = "userByUuid", query = "select u from UserEntity u where u.uuid = :uuid"),
-                @NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email =:email")
+                @NamedQuery(name = "userByUserName", query = "select u from UserEntity u where u.userName = :userName"),
+                @NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email =:email"),
+                @NamedQuery(name = "userByUUID", query = "select u from UserEntity u where u.uuid = :uuid")
         }
 )
-
-
-
-public class UserEntity implements Serializable{
+public class UserEntity implements Serializable {
 
     @Id
-    @Column(name = "ID")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UserAuthTokenEntity user_id;
+    private Integer id;
 
-
-    @Column(name = "UUID")
+    @Column(name = "uuid")
     @NotNull
     @Size(max = 200)
     private String uuid;
 
-    @Column(name = "FIRST_NAME")
+    @Column(name = "firstname")
     @NotNull
     @Size(max = 30)
     private String firstName;
 
-    @Column(name = "LAST_NAME")
+    @Column(name = "lastname")
     @NotNull
     @Size(max = 30)
     private String lastName;
 
-    @Column(name = "USER_NAME")
+    @Column(name = "username", unique = true)
     @NotNull
     @Size(max = 30)
-    private String userName ;
+    private String userName;
 
-    @Column(name = "EMAIL")
+    @Column(name = "email", unique = true)
     @NotNull
     @Size(max = 50)
     private String email;
 
-    //@ToStringExclude
-    @Column(name = "PASSWORD")
+    @Column(name = "password")
     @NotNull
     @Size(max = 255)
     private String password;
 
-    @Column(name = "SALT")
+    @Column(name = "salt")
     @NotNull
     @Size(max = 200)
-    //@ToStringExclude
     private String salt;
 
-    @Column(name = "COUNTRY")
+    @Column(name = "country")
     @Size(max = 30)
     private String country;
 
-    @Column(name = "ABOUT_ME")
+    @Column(name = "aboutme")
     @Size(max = 50)
     private String aboutMe;
 
-    @Column(name = "DOB")
+    @Column(name = "dob")
     @Size(max = 30)
     private String dob;
 
-    @Column(name = "ROLE")
+    @Column(name = "role")
     @Size(max = 30)
     private String role;
 
-    @Column(name = "CONTACT_NUMBER")
+    @Column(name = "contactnumber")
     @Size(max = 30)
     private String contactNumber;
 
-
-    public UserAuthTokenEntity getUser_id() {
-        return user_id;
+    public Integer getId() {
+        return id;
     }
 
-    public void setUser_id(UserAuthTokenEntity user_id) {
-        this.user_id = user_id;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getUuid() {
@@ -194,22 +188,4 @@ public class UserEntity implements Serializable{
     public void setContactNumber(String contactNumber) {
         this.contactNumber = contactNumber;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        return new EqualsBuilder().append(this, obj).isEquals();
-    }
-
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(this).hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
-    }
-
-
 }
