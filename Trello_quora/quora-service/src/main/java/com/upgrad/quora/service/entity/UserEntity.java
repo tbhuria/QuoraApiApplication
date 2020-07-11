@@ -45,12 +45,12 @@ public class UserEntity implements Serializable {
     @Size(max = 30)
     private String lastName;
 
-    @Column(name = "username", unique = true)
+    @Column(name = "username")
     @NotNull
     @Size(max = 30)
     private String userName;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email")
     @NotNull
     @Size(max = 50)
     private String email;

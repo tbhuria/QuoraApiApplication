@@ -1,22 +1,21 @@
 package com.upgrad.quora.api.controller;
 
 import com.upgrad.quora.api.model.SigninResponse;
+import com.upgrad.quora.api.model.SignoutResponse;
 import com.upgrad.quora.api.model.SignupUserRequest;
 import com.upgrad.quora.api.model.SignupUserResponse;
 import com.upgrad.quora.service.business.UserBusinessService;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
+import com.upgrad.quora.service.exception.SignOutRestrictedException;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Base64;
 import java.util.UUID;
@@ -29,10 +28,8 @@ public class UserController {
     private UserBusinessService userBusinessService;
 
 
-    @RequestMapping(method = RequestMethod.POST, path = "signup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.POST, path = "/user/signup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SignupUserResponse> signup(final SignupUserRequest signupUserRequest) throws SignUpRestrictedException {
-
-
         final UserEntity userEntity = new UserEntity();
 
         userEntity.setUuid(UUID.randomUUID().toString());
@@ -68,5 +65,20 @@ public class UserController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("accessToken", userAuthEntity.getAccessToken());
         return new ResponseEntity<SigninResponse>(signinResponse, headers, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, path = "/user/signout", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<SignoutResponse> signout(@RequestHeader("authorization") final String accessToken)
+            throws SignOutRestrictedException {
+        UserAuthTokenEntity userAuthTokenEntity;
+        try {
+            String[] bearerAccessToken = accessToken.split("Bearer");
+            userAuthTokenEntity = userBusinessService.signOut(bearerAccessToken[1]);
+        } catch (ArrayIndexOutOfBoundsException are) {
+            userAuthTokenEntity = userBusinessService.signOut(accessToken);
+        }
+        UserEntity user = userAuthTokenEntity.getUserId();
+        SignoutResponse authorizedSignoutResponse = new SignoutResponse().id(user.getUuid()).message("SIGNED OUT SUCCESSFULLY");
+        return new ResponseEntity<SignoutResponse>(authorizedSignoutResponse,  HttpStatus.OK);
     }
 }

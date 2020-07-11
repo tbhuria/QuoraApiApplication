@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
+import java.time.ZonedDateTime;
 
 @Repository
 public class UserDao {
@@ -70,5 +71,15 @@ public class UserDao {
         } catch (NoResultException nre) {
             return null;
         }
+    }
+
+    public void updateUserLogoutByToken(final String accessToken, final ZonedDateTime logoutAt) {
+        entityManager.createNamedQuery("updateLogoutByToken").setParameter("token", accessToken)
+                .setParameter("logoutAt", logoutAt).executeUpdate();
+
+    }
+
+    public void updateUserLogoutAt(final UserAuthTokenEntity updateUserLogoutAt) {
+        entityManager.merge(updateUserLogoutAt);
     }
 }
