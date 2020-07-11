@@ -82,4 +82,12 @@ public class UserDao {
     public void updateUserLogoutAt(final UserAuthTokenEntity updateUserLogoutAt) {
         entityManager.merge(updateUserLogoutAt);
     }
+
+    public UserEntity getUserById(final String uuid) {
+        try {
+            return entityManager.createNamedQuery("userByUUID", UserEntity.class).setParameter("uuid", uuid).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
 }
