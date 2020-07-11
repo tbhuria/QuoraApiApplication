@@ -21,7 +21,7 @@ import java.util.Base64;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/")
 public class UserController {
 
     @Autowired
@@ -70,14 +70,14 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, path = "/user/signout", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SignoutResponse> signout(@RequestHeader("authorization") final String accessToken)
             throws SignOutRestrictedException {
-        UserAuthTokenEntity userAuthTokenEntity;
+        UserAuthTokenEntity userAuthToken = new UserAuthTokenEntity();
         try {
             String[] bearerAccessToken = accessToken.split("Bearer");
-            userAuthTokenEntity = userBusinessService.signOut(bearerAccessToken[1]);
+            userAuthToken = userBusinessService.signOut(bearerAccessToken[1]);
         } catch (ArrayIndexOutOfBoundsException are) {
-            userAuthTokenEntity = userBusinessService.signOut(accessToken);
+            userAuthToken = userBusinessService.signOut(accessToken);
         }
-        UserEntity user = userAuthTokenEntity.getUserId();
+        UserEntity user = userAuthToken.getUserId();
         SignoutResponse authorizedSignoutResponse = new SignoutResponse().id(user.getUuid()).message("SIGNED OUT SUCCESSFULLY");
         return new ResponseEntity<SignoutResponse>(authorizedSignoutResponse,  HttpStatus.OK);
     }
