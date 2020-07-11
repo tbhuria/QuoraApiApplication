@@ -60,7 +60,7 @@ public class UserController {
         String[] decodedArray = decodedText.split(":");
         UserAuthTokenEntity userAuthEntity = userBusinessService.signin(decodedArray[0], decodedArray[1]);
         SigninResponse signinResponse = new SigninResponse();
-        signinResponse.setId(userAuthEntity.getUserId().getUuid());
+        signinResponse.setId(userAuthEntity.getUser().getUuid());
         signinResponse.setMessage("SIGNED IN SUCCESSFULLY");
         HttpHeaders headers = new HttpHeaders();
         headers.add("accessToken", userAuthEntity.getAccessToken());
@@ -77,7 +77,7 @@ public class UserController {
         } catch (ArrayIndexOutOfBoundsException are) {
             userAuthToken = userBusinessService.signOut(accessToken);
         }
-        UserEntity user = userAuthToken.getUserId();
+        UserEntity user = userAuthToken.getUser();
         SignoutResponse authorizedSignoutResponse = new SignoutResponse().id(user.getUuid()).message("SIGNED OUT SUCCESSFULLY");
         return new ResponseEntity<SignoutResponse>(authorizedSignoutResponse,  HttpStatus.OK);
     }

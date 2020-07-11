@@ -4,6 +4,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
 import javax.persistence.*;
@@ -17,34 +19,35 @@ import java.util.Date;
 @Table(name = "question")
 @NamedQueries(
         {
-                @NamedQuery(name = "questionByUserId", query = "select q from QuestionEntity q where q.user_id = :userId"),
-                @NamedQuery(name = "questionByUUID", query = "select q from QuestionEntity q where q.uuid = :uuid")
+                @NamedQuery(name = "QuestionByUserId", query = "select q from QuestionEntity q where q.user = :user"),
+                @NamedQuery(name = "ListofAllQuestions", query = "select q from QuestionEntity q"),
+                @NamedQuery(name = "QuestionByUUID", query = "select q from QuestionEntity q where q.uuid = :uuid")
         }
 )
 public class QuestionEntity implements Serializable {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "uuid")
+    @Column(name = "UUID")
     @NotNull
     @Size(max = 200)
-    private int uuid;
+    private String uuid;
 
-    @Column(name = "content")
+    @Column(name = "CONTENT")
     @NotNull
     @Size(max = 500)
     private String content;
 
-    @Column(name = "date")
+    @Column(name = "DATE")
     private ZonedDateTime date;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    @NotNull
-    private UserEntity user_id;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "USER_ID")
+    private UserEntity user;
 
     public Integer getId() {
         return id;
@@ -54,15 +57,31 @@ public class QuestionEntity implements Serializable {
         this.id = id;
     }
 
-    public int getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(int uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 
-        public ZonedDateTime getDate() {
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
+    public ZonedDateTime getDate() {
         return date;
     }
 
@@ -70,30 +89,19 @@ public class QuestionEntity implements Serializable {
         this.date = date;
     }
 
-    public UserEntity getUser_id() {
-        return user_id;
-    }
-
-    public void setUser_id(UserEntity user_id) {
-        this.user_id = user_id;
-    }
-   /* public RoleEntity(@NotNull int uuid) {
-        this.uuid = uuid;
-    }*/
-
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals (Object obj){
         return new EqualsBuilder().append(this, obj).isEquals();
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode () {
         return new HashCodeBuilder().append(this).hashCode();
     }
 
     @Override
-    public String toString() {
+    public String toString () {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
-}
 
+}

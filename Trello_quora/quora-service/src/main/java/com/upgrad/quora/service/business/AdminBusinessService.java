@@ -23,7 +23,7 @@ public class AdminBusinessService {
 
     public boolean confirmAdmin(final String accessToken) throws AuthorizationFailedException {
         UserAuthTokenEntity userByToken = userBusinessService.getUserByToken(accessToken);
-        if (userByToken.getUserId().getRole().equals("admin")) {
+        if (userByToken.getUser().getRole().equals("admin")) {
             return true;
         } else {
             throw new AuthorizationFailedException("ATHR-003", "Unauthorized Access, Entered user is not an admin");
