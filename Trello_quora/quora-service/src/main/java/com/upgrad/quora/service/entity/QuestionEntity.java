@@ -19,7 +19,7 @@ import java.util.Date;
 @Table(name = "question")
 @NamedQueries(
         {
-                @NamedQuery(name = "QuestionByUserId", query = "select q from QuestionEntity q where q.user = :user"),
+                @NamedQuery(name = "AllQuestionsByUser", query = "select q from QuestionEntity q inner join q.user u where u.uuid = :uuid"),
                 @NamedQuery(name = "ListofAllQuestions", query = "select q from QuestionEntity q"),
                 @NamedQuery(name = "QuestionByUUID", query = "select q from QuestionEntity q where q.uuid = :uuid")
         }

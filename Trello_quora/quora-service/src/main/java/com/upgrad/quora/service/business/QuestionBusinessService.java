@@ -4,8 +4,10 @@ import com.upgrad.quora.service.dao.QuestionDao;
 import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
+import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
+import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -124,6 +126,25 @@ public class QuestionBusinessService {
             throw new AuthorizationFailedException("ATHR-003", "Only the question owner or admin can delete the question");
         }
         return questionIdUuid;
+    }
+
+    //** getAllQuestionsByUser **//
+    //This method updates the question in the database retrieves all the questions post by a user from the database
+    public List<QuestionEntity> getAllQuestionsByUser(final String accessToken, String userUuid) throws AuthorizationFailedException, UserNotFoundException {
+        UserAuthTokenEntity userAuthTokenEntity = userDao.getUserAuthToken(accessToken);
+        if (userAuthTokenEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+        ZonedDateTime logoutTime = userAuthTokenEntity.getLogoutAt();
+        if (logoutTime != null) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to edit the question");
+        }
+       //UserEntity userEntity = userBusinessService.getUser(userUuid, accessToken);
+        UserEntity userEntity = userDao.getUserByUuid(userUuid);
+        if (userEntity == null) {
+            throw new UserNotFoundException("USR-001", "User with entered uuid whose question details are to be seen does not exist");
+        }
+        return questionDao.getAllQuestionsByUser(userUuid);
     }
 }
 
