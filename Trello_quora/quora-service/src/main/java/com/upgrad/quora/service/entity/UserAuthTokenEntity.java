@@ -31,7 +31,7 @@ public class UserAuthTokenEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
-    private UserEntity userId;
+    private UserEntity user;
 
     @Column(name = "ACCESS_TOKEN")
     @NotNull
@@ -58,12 +58,12 @@ public class UserAuthTokenEntity implements Serializable {
         this.id = id;
     }
 
-    public UserEntity getUserId() {
-        return userId;
+    public UserEntity getUser() {
+        return user;
     }
 
-    public void setUser(UserEntity userId) {
-        this.userId = userId;
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
     public String getAccessToken() {

@@ -82,4 +82,21 @@ public class UserDao {
     public void updateUserLogoutAt(final UserAuthTokenEntity updateUserLogoutAt) {
         entityManager.merge(updateUserLogoutAt);
     }
+
+    public UserEntity getUserById(final String uuid) {
+        try {
+            return entityManager.createNamedQuery("userByUUID", UserEntity.class).setParameter("uuid", uuid).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    //This method retrieves the user based on user uuid, if found returns user else null
+    public UserEntity getUserByUuid(final String uuid) {
+        try {
+            return entityManager.createNamedQuery("userByUUID", UserEntity.class).setParameter("uuid", uuid).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
 }
